@@ -13,7 +13,7 @@ else
   source git: CRYSTAL_SRC
 end
 
-dependency "pcre"
+dependency "pcre2"
 dependency "bdw-gc"
 dependency "llvm_bin" unless FIRST_RUN
 dependency "libevent"
@@ -40,9 +40,9 @@ else
 end
 
 if macos? || mac_os_x?
-  env["CRYSTAL_PATH"] = "/private/var/cache/omnibus/src/crystal/src"
+  env["CRYSTAL_PATH"] = "lib:/private/var/cache/omnibus/src/crystal/src"
 else
-  env["CRYSTAL_PATH"] = "#{project_dir}/src"
+  env["CRYSTAL_PATH"] = "lib:#{project_dir}/src"
 end
 
 build do
@@ -76,7 +76,7 @@ build do
   # Compile for aarch64
   make "crystal stats=true release=true target=aarch64-apple-darwin FLAGS=\"#{crflags}\" CRYSTAL_CONFIG_TARGET=aarch64-apple-darwin CRYSTAL_CONFIG_LIBRARY_PATH= O=#{output_path}", env: env
 
-  command "clang #{output_path}/crystal.o -o #{output_bin}_arm64 -target arm64-apple-darwin src/llvm/ext/llvm_ext.o `llvm-config --libs --system-libs --ldflags 2>/dev/null` -lstdc++ -lpcre -lgc -lpthread -levent -liconv -ldl -v", env: env
+  command "clang #{output_path}/crystal.o -o #{output_bin}_arm64 -target arm64-apple-darwin src/llvm/ext/llvm_ext.o `llvm-config --libs --system-libs --ldflags 2>/dev/null` -lstdc++ -lpcre2-8 -lgc -lpthread -levent -liconv -ldl -v", env: env
   delete "#{output_path}/crystal.o"
 
   # Lipo them up

@@ -16,6 +16,8 @@ pull_images ?= ## Always pull docker images to ensure they're up to date
 CRYSTAL_VERSION ?=   ## How the binaries should be branded
 PACKAGE_ITERATION ?= 1
 PACKAGE_MAINTAINER = Crystal Team <crystal@manas.tech>
+CRYSTAL_DEB ?=       ## Which crystal.deb file to install in debian based docker images (ubuntu32)
+CRYSTAL_TARGZ ?=     ## Which crystal.tar.gz file to install in docker images (ubuntu64, alpine)
 
 DOCKER_TAG ?= $(CRYSTAL_VERSION)## How to tag the docker image (examples: `0.27.2`, `nightly20190307`). `-build` will be appended for build images.
 DOCKER_REPOSITORY ?= crystallang/crystal## Docker hub repository to commit image

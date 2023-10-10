@@ -1,4 +1,4 @@
-SHARDS_VERSION = "0.17.1"
+SHARDS_VERSION = "0.17.3"
 
 name "shards"
 default_version SHARDS_VERSION
@@ -59,6 +59,14 @@ version "0.17.1" do
   source md5: "8bca944b1bbac88223e1bedcbc23eed0"
 end
 
+version "0.17.2" do
+  source md5: "2f0ae55946c413bbbb4e4dce204a81e7"
+end
+
+version "0.17.3" do
+  source md5: "1fc2b19765e28a6bbf16291caf9cf62c"
+end
+
 source url: "https://github.com/crystal-lang/shards/archive/v#{version}.tar.gz"
 
 relative_path "shards-#{version}"
@@ -82,7 +90,7 @@ build do
   # Build for ARM64
   crflags += " --cross-compile --target aarch64-apple-darwin"
   make "bin/shards SHARDS=false CRYSTAL=#{install_dir}/bin/crystal FLAGS='#{crflags}'", env: env
-  command "clang bin/shards.o -o bin/shards_arm64 -target arm64-apple-darwin -L#{install_dir}/embedded/lib -lyaml -lpcre -lgc -lpthread -levent -liconv -ldl", env: env
+  command "clang bin/shards.o -o bin/shards_arm64 -target arm64-apple-darwin -L#{install_dir}/embedded/lib -lyaml -lpcre2-8 -lgc -lpthread -levent -liconv -ldl", env: env
 
   # Lipo them up
   command "lipo -create -output bin/shards bin/shards_x86_64 bin/shards_arm64"

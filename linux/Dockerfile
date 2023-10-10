@@ -1,9 +1,7 @@
 FROM debian:11 AS debian
 
-ARG llvm_version=13
-
 RUN apt-get update \
- && apt-get install -y build-essential libevent-dev libpcre3-dev automake libtool pkg-config git curl llvm-${llvm_version} clang-13 \
+ && apt-get install -y build-essential libevent-dev libpcre2-dev automake libtool pkg-config git curl llvm-13 clang-13 \
  && (pkg-config || true)
 
 ARG release
@@ -24,16 +22,16 @@ RUN /tmp/shallow-clone.sh ${gc_version} https://github.com/ivmai/bdwgc \
  && ./configure --disable-debug --disable-shared --enable-large-config \
  && make -j$(nproc)
 
-FROM alpine:3.16
+FROM alpine:3.17
 
-ARG llvm_version=13
+ARG llvm_version=15
 
 # Install dependencies
 RUN apk add --no-cache \
       # Statically-compiled llvm
       llvm${llvm_version}-dev llvm${llvm_version}-static \
       # Static stdlib dependencies
-      zlib-static yaml-static libxml2-dev pcre-dev libevent-static \
+      zlib-static yaml-static libxml2-static pcre2-dev libevent-static \
       # Static compiler dependencies
       libffi-dev \
       # Build tools

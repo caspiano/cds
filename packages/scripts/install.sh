@@ -104,7 +104,7 @@ _discover_distro_repo() {
       ;;
     opensuse-leap)
       _check_version_id
-      DISTRO_REPO="openSUSE_Leap_${VERSION_ID}"
+      DISTRO_REPO="${VERSION_ID}"
       ;;
     "")
       _error "Unable to identify distribution. You may specify one with environment variable DISTRO_REPO"
@@ -196,8 +196,8 @@ _install_apt() {
   fi
 
   # Add repo signign key
-  wget -qO- https://download.opensuse.org/repositories/${OBS_PROJECT}/${DISTRO_REPO}/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/devel_languages_crystal.gpg > /dev/null
-  echo "deb http://download.opensuse.org/repositories/${OBS_PROJECT}/${DISTRO_REPO}/ /" | tee /etc/apt/sources.list.d/crystal.list
+  wget -qO- https://download.opensuse.org/repositories/${OBS_PROJECT//:/:\/}/${DISTRO_REPO}/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/devel_languages_crystal.gpg > /dev/null
+  echo "deb http://download.opensuse.org/repositories/${OBS_PROJECT//:/:\/}/${DISTRO_REPO}/ /" | tee /etc/apt/sources.list.d/crystal.list
   apt-get update
 
   if [[ "$CRYSTAL_VERSION" == "latest" ]]; then
@@ -208,7 +208,7 @@ _install_apt() {
 }
 
 _install_rpm_key() {
-  rpm --verbose --import https://build.opensuse.org/projects/${OBS_PROJECT}/public_key
+  rpm --verbose --import https://build.opensuse.org/projects/${OBS_PROJECT}/signing_keys/download?kind=gpg
 }
 
 _install_yum() {
@@ -218,9 +218,9 @@ _install_yum() {
 [crystal]
 name=Crystal (${DISTRO_REPO})
 type=rpm-md
-baseurl=https://download.opensuse.org/repositories/${OBS_PROJECT}/${DISTRO_REPO}/
+baseurl=https://download.opensuse.org/repositories/${OBS_PROJECT//:/:\/}/${DISTRO_REPO}/
 gpgcheck=1
-gpgkey=https://download.opensuse.org/repositories/${OBS_PROJECT}/${DISTRO_REPO}/repodata/repomd.xml.key
+gpgkey=https://download.opensuse.org/repositories/${OBS_PROJECT//:/:\/}/${DISTRO_REPO}/repodata/repomd.xml.key
 enabled=1
 EOF
 
@@ -232,8 +232,7 @@ EOF
 }
 
 _install_dnf() {
-  _install_rpm_key
-
+  dnf install -y 'dnf-command(config-manager)'
   dnf config-manager --add-repo https://download.opensuse.org/repositories/${OBS_PROJECT}/$DISTRO_REPO/${OBS_PROJECT}.repo
 
   if [[ "$CRYSTAL_VERSION" == "latest" ]]; then
@@ -250,7 +249,7 @@ _install_zypper() {
   fi
 
   _install_rpm_key
-  zypper --non-interactive addrepo https://download.opensuse.org/repositories/${OBS_PROJECT}/$DISTRO_REPO/${OBS_PROJECT}.repo
+  zypper --non-interactive addrepo https://download.opensuse.org/repositories/${OBS_PROJECT//:/:\/}/$DISTRO_REPO/${OBS_PROJECT}.repo
   zypper --non-interactive refresh
 
   if [[ "$CRYSTAL_VERSION" == "latest" ]]; then
@@ -269,7 +268,7 @@ case $DISTRO_REPO in
     _install_apt
     ;;
   Fedora*)
-    _install_yum
+    _install_dnf
     ;;
   RHEL*)
     _install_yum
@@ -277,7 +276,7 @@ case $DISTRO_REPO in
   CentOS*)
     _install_yum
     ;;
-  openSUSE*)
+  15.* | openSUSE*)
     _install_zypper
     ;;
   *)

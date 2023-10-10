@@ -20,10 +20,10 @@ PACKAGE_ITERATION ?= 1
 PREVIOUS_CRYSTAL_VERSION ?=    ## Version of the bootstrap compiler
 PREVIOUS_PACKAGE_ITERATION ?= 1## Package iteration of the bootstrap compiler
 
-SHARDS_VERSION = v0.17.1
-LLVM_VERSION = 13
+SHARDS_VERSION = v0.17.3
+LLVM_VERSION = 15
 GC_VERSION = v8.2.2
-LIBPCRE_VERSION = 8.45
+LIBPCRE2_VERSION = 10.42
 LIBEVENT_VERSION = release-2.1.12-stable
 
 OUTPUT_DIR = build
@@ -51,7 +51,7 @@ BOOTSTRAP_AARCH64_IMAGE=84codes/crystal:$(PREVIOUS_CRYSTAL_VERSION)-alpine
 .SHELLFLAGS=-cx
 
 BUILD_ARGS_LIB_VERSIONS = \
-        --build-arg libpcre_version=$(LIBPCRE_VERSION) \
+        --build-arg libpcre2_version=$(LIBPCRE2_VERSION) \
         --build-arg libevent_version=$(LIBEVENT_VERSION)
 
 BUILD_ARGS_COMMON = \
@@ -78,6 +78,9 @@ BUILD_ARGS_BUNDLED = \
        $(BUILD_ARGS) \
        $(BUILD_ARGS_LIB_VERSIONS) \
        -f bundled.dockerfile
+
+BUILD_ARGS64_BUNDLED = $(BUILD_ARGS64) \
+       $(BUILD_ARGS_LIB_VERSIONS) \
 
 .PHONY: all
 all: all_linux ## Build all distribution tarballs [default]

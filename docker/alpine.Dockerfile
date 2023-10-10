@@ -1,32 +1,14 @@
-FROM alpine:3.16 as runtime
+ARG base_docker_image=alpine:3.17
+FROM ${base_docker_image} as runtime
 
 RUN \
   apk add --update --no-cache --force-overwrite \
     # core dependencies
-    gcc gmp-dev libevent-static musl-dev pcre-dev \
+    gcc gmp-dev libevent-static musl-dev pcre-dev pcre2-dev \
     # stdlib dependencies
-    libxml2-dev openssl-dev openssl-libs-static tzdata yaml-static zlib-static \
+    gc-dev libxml2-dev libxml2-static openssl-dev openssl-libs-static tzdata yaml-static zlib-static xz-static \
     # dev tools
-    make git \
-    # build libgc dependencies
-    autoconf automake libtool patch
-
-# Build libgc
-ARG gc_version=8.2.2
-
-COPY scripts/shallow-clone.sh /tmp/shallow-clone.sh
-
-RUN /tmp/shallow-clone.sh ${gc_version} https://github.com/ivmai/bdwgc \
- && rm /tmp/shallow-clone.sh \
- && cd bdwgc \
- \
- && ./autogen.sh \
- && ./configure --disable-debug --disable-shared --enable-large-config \
- && make -j$(nproc) CFLAGS="-DNO_GETCONTEXT -pipe -fPIC -O3" \
- && make install
-
-# Remove build tools from image now that libgc is built
-RUN apk del -r --purge autoconf automake libtool patch
+    make git
 
 # Copy platform specific crystal build into container
 ARG crystal_targz
@@ -43,7 +25,7 @@ CMD ["/bin/sh"]
 
 FROM runtime as build
 
-ARG llvm_version=13
+ARG llvm_version=15
 
 RUN \
   apk add --update --no-cache --force-overwrite \
